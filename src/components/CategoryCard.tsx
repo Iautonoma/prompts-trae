@@ -9,9 +9,10 @@ interface CategoryCardProps {
 }
 
 const CategoryCard = ({ category }: CategoryCardProps) => {
-  // Dynamically get icon component
+  // Dynamically get icon component with safe fallback
+  const rawIcon = category.icon || 'layout-dashboard';
   // @ts-ignore
-  const IconComponent = (Icons[category.icon.charAt(0).toUpperCase() + category.icon.slice(1).replace(/-([a-z])/g, function (g) { return g[1].toUpperCase(); })] || Icons.Layout) as LucideIcon;
+  const IconComponent = (Icons[rawIcon.charAt(0).toUpperCase() + rawIcon.slice(1).replace(/-([a-z])/g, function (g) { return g[1].toUpperCase(); })] || Icons.Layout) as LucideIcon;
 
   return (
     <Link 

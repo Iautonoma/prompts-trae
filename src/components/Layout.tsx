@@ -1,6 +1,7 @@
 import React from 'react';
 import Navbar from './Navbar';
 import { Toaster } from 'react-hot-toast';
+import BackendStatus from './BackendStatus';
 
 interface LayoutProps {
   children: React.ReactNode;
@@ -11,6 +12,7 @@ const Layout = ({ children }: LayoutProps) => {
     <div className="min-h-screen bg-black font-sans text-white">
       <Navbar />
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <BackendStatus />
         {children}
       </main>
       <Toaster 
