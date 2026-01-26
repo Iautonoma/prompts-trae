@@ -59,3 +59,4 @@ export VERCEL_SCOPE=SEU_TIME
 ## Observações
 - Nunca use `service_role_key` no frontend.
 - As migrações Supabase estão em `supabase/migrations`.
+- Este projeto está com deploy automático na Vercel conectado ao GitHub; qualquer push na branch main dispara novo build.
