@@ -22,6 +22,10 @@ const SearchPage = () => {
     setHasSearched(true);
 
     try {
+      if (!supabase) {
+        setResults([]);
+        return;
+      }
       const { data } = await supabase
         .from('prompts')
         .select('*')

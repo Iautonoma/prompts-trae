@@ -16,6 +16,10 @@ const Home = () => {
   useEffect(() => {
     const fetchData = async () => {
       try {
+        if (!supabase) {
+          setLoading(false);
+          return;
+        }
         // Fetch categories
         const { data: categoriesData } = await supabase
           .from('categories')

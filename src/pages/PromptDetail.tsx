@@ -16,6 +16,10 @@ const PromptDetail = () => {
       if (!id) return;
       
       try {
+        if (!supabase) {
+          setLoading(false);
+          return;
+        }
         const { data, error } = await supabase
           .from('prompts')
           .select('*')

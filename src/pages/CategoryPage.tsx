@@ -15,6 +15,10 @@ const CategoryPage = () => {
     const fetchData = async () => {
       setLoading(true);
       try {
+        if (!supabase) {
+          setLoading(false);
+          return;
+        }
         // Fetch category details
         const { data: categoryData } = await supabase
           .from('categories')

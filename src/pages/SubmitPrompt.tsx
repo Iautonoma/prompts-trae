@@ -36,6 +36,10 @@ const SubmitPrompt = () => {
     setLoading(true);
 
     try {
+      if (!supabase) {
+        toast.error('Supabase não configurado. Defina as variáveis no ambiente de produção.');
+        return;
+      }
       const tagsArray = formData.tags.split(',').map(tag => tag.trim()).filter(tag => tag.length > 0);
 
       const { error } = await supabase.from('prompts').insert([
