@@ -45,6 +45,17 @@ pnpm build
 vercel --prebuilt --prod
 ```
 
+## Sincronizar envs com a Vercel
+- Local: edite `.env` com `VITE_SUPABASE_URL` e `VITE_SUPABASE_ANON_KEY` (use `.env.example` como base)
+- Para enviar esses valores para o projeto na Vercel sem abrir o dashboard:
+```
+export VERCEL_TOKEN=SEU_TOKEN
+# opcional: se usar time/organização
+export VERCEL_SCOPE=SEU_TIME
+./scripts/env-sync-vercel.sh
+```
+- Depois, faça um redeploy.
+
 ## Observações
 - Nunca use `service_role_key` no frontend.
 - As migrações Supabase estão em `supabase/migrations`.
