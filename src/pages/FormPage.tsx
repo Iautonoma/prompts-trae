@@ -20,27 +20,40 @@ const FormPage: React.FC = () => {
 
   useEffect(() => {
     // Adicionar asteriscos vermelhos nos campos obrigatórios
-    const requiredFields = document.querySelectorAll('[required]');
-    requiredFields.forEach(field => {
-      const label = field.closest('.form-group')?.querySelector('label');
-      if (label && !label.querySelector('.required-asterisk')) {
-        const asterisk = document.createElement('span');
-        asterisk.className = 'required-asterisk';
-        asterisk.textContent = '*';
-        asterisk.style.color = '#f44336';
-        asterisk.style.fontWeight = 'bold';
-        asterisk.style.marginLeft = '3px';
-        label.appendChild(asterisk);
-      }
-    });
+    const addAsterisks = () => {
+      const requiredFields = document.querySelectorAll('[required]');
+      requiredFields.forEach(field => {
+        const label = field.closest('.form-group')?.querySelector('label');
+        if (label && !label.querySelector('.required-asterisk')) {
+          const asterisk = document.createElement('span');
+          asterisk.className = 'required-asterisk';
+          asterisk.textContent = '*';
+          asterisk.style.color = '#f44336';
+          asterisk.style.fontWeight = 'bold';
+          asterisk.style.marginLeft = '3px';
+          label.appendChild(asterisk);
+        }
+      });
+    };
+
+    // Adicionar asteriscos após um pequeno delay para garantir que o DOM esteja pronto
+    const timeoutId = setTimeout(addAsterisks, 100);
+    
+    return () => clearTimeout(timeoutId);
   }, []);
 
   const validateField = (name: string, value: any): string => {
-    if (!value || (Array.isArray(value) && value.length === 0)) {
-      return 'Este campo é obrigatório';
+    // Verificar campos obrigatórios
+    if (name === 'mauticform[nome]' || name === 'mauticform[cidade]') {
+      if (!value || value.toString().trim() === '') {
+        return 'Este campo é obrigatório';
+      }
     }
     
     if (name === 'mauticform[email_de_contato]') {
+      if (!value || value.toString().trim() === '') {
+        return 'Este campo é obrigatório';
+      }
       const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
       if (!emailRegex.test(value)) {
         return 'Por favor, digite um email válido';
@@ -48,6 +61,9 @@ const FormPage: React.FC = () => {
     }
     
     if (name === 'mauticform[whatsapp]') {
+      if (!value || value.toString().trim() === '') {
+        return 'Este campo é obrigatório';
+      }
       const phoneRegex = /^\(?\d{2}\)?\s?\d{4,5}-?\d{4}$/;
       if (!phoneRegex.test(value.replace(/\s/g, ''))) {
         return 'Por favor, digite um telefone válido';
@@ -92,7 +108,7 @@ const FormPage: React.FC = () => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
-    // Validar todos os campos
+    // Validar todos os campos obrigatórios antes de enviar
     const newErrors: Record<string, string> = {};
     
     // Campos obrigatórios
@@ -103,16 +119,21 @@ const FormPage: React.FC = () => {
       'mauticform[cidade]'
     ];
     
+    let hasErrors = false;
+    
     requiredFields.forEach(field => {
-      const error = validateField(field, formData[field as keyof typeof formData]);
+      const value = formData[field as keyof typeof formData];
+      const error = validateField(field, value);
       if (error) {
         newErrors[field] = error;
+        hasErrors = true;
       }
     });
     
     setErrors(newErrors);
     
-    if (Object.keys(newErrors).length > 0) {
+    if (hasErrors) {
+      alert('Por favor, preencha todos os campos obrigatórios marcados com *');
       return;
     }
     
@@ -185,6 +206,18 @@ const FormPage: React.FC = () => {
             </div>
             
             <form onSubmit={handleSubmit} className="p-8 space-y-6">
+              <style>{`
+                .form-group.error input,
+                .form-group.error select,
+                .form-group.error textarea {
+                  border-color: #f44336 !important;
+                  border-width: 2px !important;
+                }
+                .form-group.error label {
+                  color: #f44336 !important;
+                }
+              `}</style>
+              
               {/* Campo Nome */}
               <div className={`form-group ${errors['mauticform[nome]'] ? 'error' : ''}`}>
                 <label htmlFor="mauticform_nome" className="block text-sm font-medium text-gray-700 mb-2">
