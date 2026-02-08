@@ -1,0 +1,545 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TRAE no Brasil - Lista de Inscrição</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #4CAF50 0%, #45a049 100%);
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+
+        .header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+        }
+
+        .header p {
+            font-size: 1.1em;
+            opacity: 0.9;
+        }
+
+        .form-container {
+            padding: 40px;
+        }
+
+        .form-group {
+            margin-bottom: 25px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #333;
+            font-size: 1.1em;
+        }
+
+        .form-group input,
+        .form-group select,
+        .form-group textarea {
+            width: 100%;
+            padding: 15px;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            font-size: 1em;
+            transition: all 0.3s ease;
+            background-color: #fafafa;
+        }
+
+        .form-group input:focus,
+        .form-group select:focus,
+        .form-group textarea:focus {
+            outline: none;
+            border-color: #4CAF50;
+            background-color: white;
+            box-shadow: 0 0 0 3px rgba(76, 175, 80, 0.1);
+        }
+
+        .form-group.error input,
+        .form-group.error select,
+        .form-group.error textarea {
+            border-color: #f44336;
+            background-color: #fff5f5;
+        }
+
+        .form-group.error input:focus,
+        .form-group.error select:focus,
+        .form-group.error textarea:focus {
+            border-color: #f44336;
+            box-shadow: 0 0 0 3px rgba(244, 67, 54, 0.1);
+        }
+
+        .error-message {
+            color: #f44336;
+            font-size: 0.9em;
+            margin-top: 5px;
+            display: none;
+        }
+
+        .form-group.error .error-message {
+            display: block;
+        }
+
+        .radio-group {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .radio-option {
+            display: flex;
+            align-items: center;
+            padding: 10px;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .radio-option:hover {
+            border-color: #4CAF50;
+            background-color: #f8fff8;
+        }
+
+        .radio-option input[type="radio"] {
+            width: auto;
+            margin-right: 10px;
+        }
+
+        .checkbox-group {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .checkbox-group input[type="checkbox"] {
+            width: auto;
+        }
+
+        .submit-btn {
+            width: 100%;
+            padding: 18px;
+            background: linear-gradient(135deg, #4CAF50 0%, #45a049 100%);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 1.2em;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .submit-btn:hover:not(:disabled) {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(76, 175, 80, 0.3);
+        }
+
+        .submit-btn:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+        }
+
+        .loading {
+            display: none;
+            text-align: center;
+            margin-top: 20px;
+        }
+
+        .loading.active {
+            display: block;
+        }
+
+        .spinner {
+            border: 3px solid #f3f3f3;
+            border-top: 3px solid #4CAF50;
+            border-radius: 50%;
+            width: 30px;
+            height: 30px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 10px;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .success-message {
+            display: none;
+            background: #d4edda;
+            color: #155724;
+            padding: 20px;
+            border-radius: 8px;
+            margin-top: 20px;
+            border: 1px solid #c3e6cb;
+        }
+
+        .success-message.active {
+            display: block;
+        }
+
+        .required::after {
+            content: " *";
+            color: #f44336;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>TRAE no Brasil</h1>
+            <p>Lista de Inscrição - Hackathon</p>
+        </div>
+
+        <div class="form-container">
+            <form id="traeForm" action="https://rsvp.kronedesign.com.br/form/submit?formId=2" method="POST">
+                <!-- Campos obrigatórios -->
+                <div class="form-group">
+                    <label for="nome" class="required">Nome</label>
+                    <input type="text" id="nome" name="mauticform[nome]" required>
+                    <div class="error-message">Por favor, digite seu nome</div>
+                </div>
+
+                <div class="form-group">
+                    <label for="email" class="required">Email de contato</label>
+                    <input type="email" id="email" name="mauticform[email_de_contato]" required>
+                    <div class="error-message">Por favor, digite um email válido</div>
+                </div>
+
+                <div class="form-group">
+                    <label for="whatsapp" class="required">WhatsApp ou Telefone com DDD</label>
+                    <input type="tel" id="whatsapp" name="mauticform[whatsapp]" placeholder="(11) 99999-9999" required>
+                    <div class="error-message">Por favor, digite seu WhatsApp ou telefone com DDD</div>
+                </div>
+
+                <div class="form-group">
+                    <label for="cidade" class="required">Cidade</label>
+                    <input type="text" id="cidade" name="mauticform[cidade]" required>
+                    <div class="error-message">Por favor, digite sua cidade</div>
+                </div>
+
+                <div class="form-group">
+                    <label for="estado" class="required">Estado</label>
+                    <select id="estado" name="mauticform[estado]" required>
+                        <option value="">Selecione seu estado</option>
+                        <option value="AC">Acre</option>
+                        <option value="AL">Alagoas</option>
+                        <option value="AP">Amapá</option>
+                        <option value="AM">Amazonas</option>
+                        <option value="BA">Bahia</option>
+                        <option value="CE">Ceará</option>
+                        <option value="DF">Distrito Federal</option>
+                        <option value="ES">Espírito Santo</option>
+                        <option value="GO">Goiás</option>
+                        <option value="MA">Maranhão</option>
+                        <option value="MT">Mato Grosso</option>
+                        <option value="MS">Mato Grosso do Sul</option>
+                        <option value="MG">Minas Gerais</option>
+                        <option value="PA">Pará</option>
+                        <option value="PB">Paraíba</option>
+                        <option value="PR">Paraná</option>
+                        <option value="PE">Pernambuco</option>
+                        <option value="PI">Piauí</option>
+                        <option value="RJ">Rio de Janeiro</option>
+                        <option value="RN">Rio Grande do Norte</option>
+                        <option value="RS">Rio Grande do Sul</option>
+                        <option value="RO">Rondônia</option>
+                        <option value="RR">Roraima</option>
+                        <option value="SC">Santa Catarina</option>
+                        <option value="SP">São Paulo</option>
+                        <option value="SE">Sergipe</option>
+                        <option value="TO">Tocantins</option>
+                    </select>
+                    <div class="error-message">Por favor, selecione seu estado</div>
+                </div>
+
+                <div class="form-group">
+                    <label class="required">Nível de experiência com desenvolvimento</label>
+                    <div class="radio-group">
+                        <label class="radio-option">
+                            <input type="radio" name="mauticform[nivel_experiencia]" value="iniciante" required>
+                            <span>Iniciante</span>
+                        </label>
+                        <label class="radio-option">
+                            <input type="radio" name="mauticform[nivel_experiencia]" value="intermediario" required>
+                            <span>Intermediário</span>
+                        </label>
+                        <label class="radio-option">
+                            <input type="radio" name="mauticform[nivel_experiencia]" value="avancado" required>
+                            <span>Avançado</span>
+                        </label>
+                    </div>
+                    <div class="error-message">Por favor, selecione seu nível de experiência</div>
+                </div>
+
+                <div class="form-group">
+                    <label class="required">Você já conhece ou utiliza o TRAE?</label>
+                    <div class="radio-group">
+                        <label class="radio-option">
+                            <input type="radio" name="mauticform[conhece_trae]" value="sim" required>
+                            <span>Sim</span>
+                        </label>
+                        <label class="radio-option">
+                            <input type="radio" name="mauticform[conhece_trae]" value="nao" required>
+                            <span>Não</span>
+                        </label>
+                    </div>
+                    <div class="error-message">Por favor, selecione uma opção</div>
+                </div>
+
+                <div class="form-group">
+                    <label class="required">Qual seu principal objetivo com o Hackathon?</label>
+                    <div class="radio-group">
+                        <label class="radio-option">
+                            <input type="radio" name="mauticform[objetivo_hackathon]" value="criar_mvp" required>
+                            <span>Criar um MVP</span>
+                        </label>
+                        <label class="radio-option">
+                            <input type="radio" name="mauticform[objetivo_hackathon]" value="aprender_ia" required>
+                            <span>Aprender IA aplicada ao desenvolvimento</span>
+                        </label>
+                        <label class="radio-option">
+                            <input type="radio" name="mauticform[objetivo_hackathon]" value="networking" required>
+                            <span>Networking</span>
+                        </label>
+                        <label class="radio-option">
+                            <input type="radio" name="mauticform[objetivo_hackathon]" value="validacao_ideia" required>
+                            <span>Validação de ideia</span>
+                        </label>
+                    </div>
+                    <div class="error-message">Por favor, selecione seu principal objetivo</div>
+                </div>
+
+                <div class="form-group">
+                    <label class="required">Você tem interesse em receber informações sobre a mentoria completa?</label>
+                    <div class="radio-group">
+                        <label class="radio-option">
+                            <input type="radio" name="mauticform[interesse_mentoria]" value="sim" required>
+                            <span>Sim, quero saber mais</span>
+                        </label>
+                        <label class="radio-option">
+                            <input type="radio" name="mauticform[interesse_mentoria]" value="nao" required>
+                            <span>No momento não</span>
+                        </label>
+                    </div>
+                    <div class="error-message">Por favor, selecione uma opção</div>
+                </div>
+
+                <!-- Campos ocultos do Mautic -->
+                <input type="hidden" name="mauticform[formId]" value="2">
+                <input type="hidden" name="mauticform[submit]" value="1">
+
+                <button type="submit" class="submit-btn">Enviar Inscrição</button>
+
+                <div class="loading">
+                    <div class="spinner"></div>
+                    <p>Enviando sua inscrição...</p>
+                </div>
+
+                <div class="success-message">
+                    <h3>✅ Inscrição realizada com sucesso!</h3>
+                    <p>Obrigado por se inscrever no TRAE Hackathon. Entraremos em contato em breve.</p>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        class FormValidator {
+            constructor(formId) {
+                this.form = document.getElementById(formId);
+                this.init();
+            }
+
+            init() {
+                this.form.addEventListener('submit', (e) => this.handleSubmit(e));
+                this.addRealTimeValidation();
+            }
+
+            addRealTimeValidation() {
+                const inputs = this.form.querySelectorAll('input, select, textarea');
+                inputs.forEach(input => {
+                    input.addEventListener('blur', () => this.validateField(input));
+                    input.addEventListener('input', () => this.clearError(input));
+                });
+            }
+
+            handleSubmit(e) {
+                e.preventDefault();
+                
+                if (this.validateForm()) {
+                    this.submitForm();
+                }
+            }
+
+            validateForm() {
+                let isValid = true;
+                const requiredFields = this.form.querySelectorAll('[required]');
+
+                requiredFields.forEach(field => {
+                    if (!this.validateField(field)) {
+                        isValid = false;
+                    }
+                });
+
+                return isValid;
+            }
+
+            validateField(field) {
+                const formGroup = field.closest('.form-group');
+                let isValid = true;
+
+                // Validação básica de campo vazio
+                if (!field.value.trim()) {
+                    isValid = false;
+                }
+
+                // Validações específicas por tipo
+                if (field.type === 'email' && field.value) {
+                    isValid = this.validateEmail(field.value);
+                }
+
+                if (field.type === 'tel' && field.value) {
+                    isValid = this.validatePhone(field.value);
+                }
+
+                // Validação de radio buttons
+                if (field.type === 'radio') {
+                    const radioGroup = field.name;
+                    const checkedRadio = this.form.querySelector(`input[name="${radioGroup}"]:checked`);
+                    isValid = !!checkedRadio;
+                }
+
+                // Validação de select
+                if (field.tagName === 'SELECT' && field.value === '') {
+                    isValid = false;
+                }
+
+                if (isValid) {
+                    this.clearError(field);
+                } else {
+                    this.showError(field);
+                }
+
+                return isValid;
+            }
+
+            validateEmail(email) {
+                const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+                return emailRegex.test(email);
+            }
+
+            validatePhone(phone) {
+                // Valida telefone brasileiro com DDD
+                const phoneRegex = /^\(?\d{2}\)?\s?\d{4,5}-?\d{4}$/;
+                return phoneRegex.test(phone.replace(/\s/g, ''));
+            }
+
+            showError(field) {
+                const formGroup = field.closest('.form-group');
+                if (formGroup) {
+                    formGroup.classList.add('error');
+                }
+            }
+
+            clearError(field) {
+                const formGroup = field.closest('.form-group');
+                if (formGroup) {
+                    formGroup.classList.remove('error');
+                }
+            }
+
+            async submitForm() {
+                const submitBtn = this.form.querySelector('.submit-btn');
+                const loading = this.form.querySelector('.loading');
+                const successMessage = this.form.querySelector('.success-message');
+
+                // Desabilitar botão e mostrar loading
+                submitBtn.disabled = true;
+                loading.classList.add('active');
+
+                try {
+                    const formData = new FormData(this.form);
+                    
+                    const response = await fetch(this.form.action, {
+                        method: 'POST',
+                        body: formData,
+                        headers: {
+                            'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8'
+                        }
+                    });
+
+                    if (response.ok) {
+                        // Sucesso
+                        loading.classList.remove('active');
+                        successMessage.classList.add('active');
+                        this.form.reset();
+                        
+                        // Opcional: redirecionar após 3 segundos
+                        setTimeout(() => {
+                            window.location.href = 'https://trae.ia.br/sucesso';
+                        }, 3000);
+                    } else {
+                        throw new Error('Erro ao enviar formulário');
+                    }
+                } catch (error) {
+                    loading.classList.remove('active');
+                    submitBtn.disabled = false;
+                    alert('Erro ao enviar formulário. Por favor, tente novamente.');
+                    console.error('Erro:', error);
+                }
+            }
+        }
+
+        // Inicializar validação quando o DOM estiver pronto
+        document.addEventListener('DOMContentLoaded', () => {
+            new FormValidator('traeForm');
+        });
+
+        // Máscara para telefone
+        document.getElementById('whatsapp').addEventListener('input', function(e) {
+            let value = e.target.value.replace(/\D/g, '');
+            
+            if (value.length <= 10) {
+                // Formato: (11) 9999-9999
+                value = value.replace(/(\d{2})(\d{4})(\d{0,4})/, '($1) $2-$3');
+            } else {
+                // Formato: (11) 99999-9999
+                value = value.replace(/(\d{2})(\d{5})(\d{0,4})/, '($1) $2-$3');
+            }
+            
+            e.target.value = value;
+        });
+    </script>
+</body>
+</html>
