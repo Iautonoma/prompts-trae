@@ -22,6 +22,9 @@ const Navbar = () => {
             <Link to="/search" className="text-zinc-400 hover:text-trae transition-colors">
               <Search className="w-5 h-5" />
             </Link>
+            <Link to="/form" className="text-zinc-400 hover:text-trae transition-colors font-medium">
+              Inscrição TRAE
+            </Link>
             <Link to="/submit" className="flex items-center gap-2 bg-trae text-black px-4 py-2 rounded-lg hover:bg-trae-hover transition-colors font-medium">
               <PlusCircle className="w-4 h-4" />
               Enviar Prompt
@@ -42,6 +45,13 @@ const Navbar = () => {
       {/* Mobile menu */}
       <div className={clsx("md:hidden bg-zinc-900 border-b border-zinc-800", isMenuOpen ? "block" : "hidden")}>
         <div className="px-2 pt-2 pb-3 space-y-1 sm:px-3">
+          <Link
+            to="/form"
+            className="block px-3 py-2 rounded-md text-base font-medium text-zinc-300 hover:text-trae hover:bg-zinc-800"
+            onClick={() => setIsMenuOpen(false)}
+          >
+            Inscrição TRAE
+          </Link>
           <Link
             to="/search"
             className="block px-3 py-2 rounded-md text-base font-medium text-zinc-300 hover:text-trae hover:bg-zinc-800"
