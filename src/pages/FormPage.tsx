@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import Layout from '../components/Layout';
+import { supabase } from '../lib/supabase';
 
 const FormPage: React.FC = () => {
   const [formData, setFormData] = useState({
@@ -17,8 +18,30 @@ const FormPage: React.FC = () => {
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitSuccess, setSubmitSuccess] = useState(false);
+  const [mauticUrl, setMauticUrl] = useState('https://mautic.ia.br/form/submit?formId=1');
 
   useEffect(() => {
+    // Buscar URL do Mautic do Supabase
+    const fetchMauticUrl = async () => {
+      if (!supabase) return;
+      
+      try {
+        const { data } = await supabase
+          .from('app_settings')
+          .select('value')
+          .eq('key', 'mautic_form_url')
+          .single();
+          
+        if (data?.value) {
+          setMauticUrl(data.value);
+        }
+      } catch (error) {
+        console.error('Erro ao buscar configuração do Mautic:', error);
+      }
+    };
+    
+    fetchMauticUrl();
+
     // Adicionar asteriscos vermelhos nos campos obrigatórios
     const addAsterisks = () => {
       const requiredFields = document.querySelectorAll('[required]');
@@ -182,7 +205,7 @@ const FormPage: React.FC = () => {
         }
       });
       
-      const response = await fetch('https://mautic.ia.br/form/submit?formId=1', {
+      const response = await fetch(mauticUrl, {
         method: 'POST',
         body: formDataToSend,
         headers: {

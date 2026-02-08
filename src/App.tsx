@@ -7,6 +7,7 @@ import PromptDetail from './pages/PromptDetail';
 import SubmitPrompt from './pages/SubmitPrompt';
 import SearchPage from './pages/SearchPage';
 import FormPage from './pages/FormPage';
+import AdminPage from './pages/AdminPage';
 
 function App() {
   return (
@@ -19,6 +20,7 @@ function App() {
           <Route path="/submit" element={<SubmitPrompt />} />
           <Route path="/search" element={<SearchPage />} />
           <Route path="/form" element={<FormPage />} />
+          <Route path="/admin" element={<AdminPage />} />
         </Routes>
       </Layout>
     </Router>
