@@ -81,12 +81,14 @@ const FormPage: React.FC = () => {
       [name]: type === 'checkbox' ? (e.target as HTMLInputElement).checked : value
     }));
 
-    // Validar campo em tempo real
-    const error = validateField(name, type === 'checkbox' ? (e.target as HTMLInputElement).checked : value);
-    setErrors(prev => ({
-      ...prev,
-      [name]: error
-    }));
+    // Validar campo em tempo real (apenas se já foi tocado ou se está vazio)
+    if (value.trim() === '' || errors[name]) {
+      const error = validateField(name, type === 'checkbox' ? (e.target as HTMLInputElement).checked : value);
+      setErrors(prev => ({
+        ...prev,
+        [name]: error
+      }));
+    }
   };
 
   const handleCheckboxChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -107,6 +109,7 @@ const FormPage: React.FC = () => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    e.stopPropagation();
     
     // Validar todos os campos obrigatórios antes de enviar
     const newErrors: Record<string, string> = {};
@@ -121,12 +124,41 @@ const FormPage: React.FC = () => {
     
     let hasErrors = false;
     
+    // Validação rigorosa de cada campo
     requiredFields.forEach(field => {
       const value = formData[field as keyof typeof formData];
-      const error = validateField(field, value);
-      if (error) {
-        newErrors[field] = error;
-        hasErrors = true;
+      let isValid = false;
+      
+      if (field === 'mauticform[nome]' || field === 'mauticform[cidade]') {
+        isValid = value && value.toString().trim().length > 0;
+        if (!isValid) {
+          newErrors[field] = 'Este campo é obrigatório';
+          hasErrors = true;
+        }
+      } else if (field === 'mauticform[email_de_contato]') {
+        isValid = value && value.toString().trim().length > 0;
+        if (!isValid) {
+          newErrors[field] = 'Este campo é obrigatório';
+          hasErrors = true;
+        } else {
+          const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+          if (!emailRegex.test(value.toString())) {
+            newErrors[field] = 'Por favor, digite um email válido';
+            hasErrors = true;
+          }
+        }
+      } else if (field === 'mauticform[whatsapp]') {
+        isValid = value && value.toString().trim().length > 0;
+        if (!isValid) {
+          newErrors[field] = 'Este campo é obrigatório';
+          hasErrors = true;
+        } else {
+          const phoneRegex = /^\(?\d{2}\)?\s?\d{4,5}-?\d{4}$/;
+          if (!phoneRegex.test(value.toString().replace(/\s/g, ''))) {
+            newErrors[field] = 'Por favor, digite um telefone válido';
+            hasErrors = true;
+          }
+        }
       }
     });
     
@@ -137,6 +169,7 @@ const FormPage: React.FC = () => {
       return;
     }
     
+    // Se chegou aqui, todos os campos estão válidos
     setIsSubmitting(true);
     
     try {
@@ -171,6 +204,26 @@ const FormPage: React.FC = () => {
     } finally {
       setIsSubmitting(false);
     }
+  };
+
+  // Função para verificar se há erros
+  const hasErrors = () => {
+    return Object.keys(errors).some(key => errors[key] !== '');
+  };
+
+  // Função para verificar se todos os campos obrigatórios estão preenchidos
+  const isFormValid = () => {
+    const requiredFields = [
+      'mauticform[nome]',
+      'mauticform[email_de_contato]',
+      'mauticform[whatsapp]',
+      'mauticform[cidade]'
+    ];
+    
+    return requiredFields.every(field => {
+      const value = formData[field as keyof typeof formData];
+      return value && value.toString().trim().length > 0;
+    }) && !hasErrors();
   };
 
   const addPhoneMask = (value: string) => {
@@ -411,8 +464,12 @@ const FormPage: React.FC = () => {
               {/* Botão Submit */}
               <button
                 type="submit"
-                disabled={isSubmitting}
-                className="w-full bg-gradient-to-r from-green-500 to-green-600 text-white py-4 px-6 rounded-lg font-semibold text-lg hover:from-green-600 hover:to-green-700 focus:ring-4 focus:ring-green-300 transition-all disabled:opacity-50 disabled:cursor-not-allowed transform hover:scale-105"
+                disabled={isSubmitting || !isFormValid()}
+                className={`w-full py-4 px-6 rounded-lg font-semibold text-lg transition-all focus:ring-4 focus:ring-green-300 transform hover:scale-105 ${
+                  isFormValid() && !isSubmitting
+                    ? 'bg-gradient-to-r from-green-500 to-green-600 text-white hover:from-green-600 hover:to-green-700 cursor-pointer'
+                    : 'bg-gray-300 text-gray-500 cursor-not-allowed'
+                }`}
               >
                 {isSubmitting ? 'Enviando...' : 'Enviar Inscrição'}
               </button>
