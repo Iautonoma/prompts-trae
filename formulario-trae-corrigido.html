@@ -1,0 +1,509 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TRAE no Brasil - Lista de Inscrição</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #4CAF50 0%, #45a049 100%);
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+
+        .header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+        }
+
+        .header p {
+            font-size: 1.1em;
+            opacity: 0.9;
+        }
+
+        .form-container {
+            padding: 40px;
+        }
+
+        .form-group {
+            margin-bottom: 25px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #333;
+            font-size: 1.1em;
+        }
+
+        .form-group input,
+        .form-group select,
+        .form-group textarea {
+            width: 100%;
+            padding: 15px;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            font-size: 1em;
+            transition: all 0.3s ease;
+            background-color: #fafafa;
+        }
+
+        .form-group input:focus,
+        .form-group select:focus,
+        .form-group textarea:focus {
+            outline: none;
+            border-color: #4CAF50;
+            background-color: white;
+            box-shadow: 0 0 0 3px rgba(76, 175, 80, 0.1);
+        }
+
+        .form-group.error input,
+        .form-group.error select,
+        .form-group.error textarea {
+            border-color: #f44336;
+            background-color: #fff5f5;
+        }
+
+        .form-group.error input:focus,
+        .form-group.error select:focus,
+        .form-group.error textarea:focus {
+            border-color: #f44336;
+            box-shadow: 0 0 0 3px rgba(244, 67, 54, 0.1);
+        }
+
+        .error-message {
+            color: #f44336;
+            font-size: 0.9em;
+            margin-top: 5px;
+            display: none;
+        }
+
+        .form-group.error .error-message {
+            display: block;
+        }
+
+        .radio-group {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .radio-option {
+            display: flex;
+            align-items: center;
+            padding: 10px;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .radio-option:hover {
+            border-color: #4CAF50;
+            background-color: #f8fff8;
+        }
+
+        .radio-option input[type="radio"] {
+            width: auto;
+            margin-right: 10px;
+        }
+
+        .checkbox-group {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 10px;
+        }
+
+        .checkbox-group input[type="checkbox"] {
+            width: auto;
+        }
+
+        .submit-btn {
+            width: 100%;
+            padding: 18px;
+            background: linear-gradient(135deg, #4CAF50 0%, #45a049 100%);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 1.2em;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .submit-btn:hover:not(:disabled) {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(76, 175, 80, 0.3);
+        }
+
+        .submit-btn:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+        }
+
+        .loading {
+            display: none;
+            text-align: center;
+            margin-top: 20px;
+        }
+
+        .loading.active {
+            display: block;
+        }
+
+        .spinner {
+            border: 3px solid #f3f3f3;
+            border-top: 3px solid #4CAF50;
+            border-radius: 50%;
+            width: 30px;
+            height: 30px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 10px;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .success-message {
+            display: none;
+            background: #d4edda;
+            color: #155724;
+            padding: 20px;
+            border-radius: 8px;
+            margin-top: 20px;
+            border: 1px solid #c3e6cb;
+        }
+
+        .success-message.active {
+            display: block;
+        }
+
+        .required::after {
+            content: " *";
+            color: #f44336;
+        }
+
+        .optional-label {
+            color: #666;
+            font-size: 0.9em;
+            font-weight: normal;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>TRAE no Brasil</h1>
+            <p>Lista de Inscrição - Hackathon</p>
+        </div>
+
+        <div class="form-container">
+            <form id="traeForm" action="https://rsvp.kronedesign.com.br/form/submit?formId=2" method="POST">
+                <!-- Campos obrigatórios -->
+                <div class="form-group">
+                    <label for="mauticform_nome" class="required">Nome</label>
+                    <input type="text" id="mauticform_nome" name="mauticform[nome]" required>
+                    <div class="error-message">Por favor, digite seu nome</div>
+                </div>
+
+                <div class="form-group">
+                    <label for="mauticform_email_de_contato" class="required">Email de contato</label>
+                    <input type="email" id="mauticform_email_de_contato" name="mauticform[email_de_contato]" required>
+                    <div class="error-message">Por favor, digite um email válido</div>
+                </div>
+
+                <div class="form-group">
+                    <label for="mauticform_whatsapp" class="required">WhatsApp ou Telefone com DDD</label>
+                    <input type="text" id="mauticform_whatsapp" name="mauticform[whatsapp]" placeholder="(11) 99999-9999" required>
+                    <div class="error-message">Por favor, digite seu WhatsApp ou telefone com DDD</div>
+                </div>
+
+                <!-- Campo Cidade (OBRIGATÓRIO) - ⚠️ ESTE ESTÁ FALTANDO! -->
+                <div class="form-group">
+                    <label for="mauticform_cidade" class="required">Cidade</label>
+                    <input type="text" id="mauticform_cidade" name="mauticform[cidade]" required>
+                    <div class="error-message">Por favor, digite sua cidade</div>
+                </div>
+
+                <!-- Campo Estado (OPCIONAL) -->
+                <div class="form-group">
+                    <label for="mauticform_estado">Estado <span class="optional-label">(opcional)</span></label>
+                    <input type="text" id="mauticform_estado" name="mauticform[estado]" placeholder="Ex: SP, RJ, MG...">
+                </div>
+
+                <!-- Campos adicionais (OPCIONAIS) -->
+                <div class="form-group">
+                    <label>Nível de experiência com desenvolvimento <span class="optional-label">(opcional)</span></label>
+                    <div class="radio-group">
+                        <label class="radio-option">
+                            <input type="radio" name="mauticform[nivel_de_experiencia_com]" value="iniciante">
+                            <span>Iniciante</span>
+                        </label>
+                        <label class="radio-option">
+                            <input type="radio" name="mauticform[nivel_de_experiencia_com]" value="intermediario">
+                            <span>Intermediário</span>
+                        </label>
+                        <label class="radio-option">
+                            <input type="radio" name="mauticform[nivel_de_experiencia_com]" value="avancado">
+                            <span>Avançado</span>
+                        </label>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label>Você já conhece ou utiliza o TRAE? <span class="optional-label">(opcional)</span></label>
+                    <div class="radio-group">
+                        <label class="radio-option">
+                            <input type="radio" name="mauticform[voce_ja_conhece_ou_utiliz1]" value="sim">
+                            <span>Sim</span>
+                        </label>
+                        <label class="radio-option">
+                            <input type="radio" name="mauticform[voce_ja_conhece_ou_utiliz1]" value="nao">
+                            <span>Não</span>
+                        </label>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label>Qual seu principal objetivo com o Hackathon? <span class="optional-label">(opcional, pode marcar vários)</span></label>
+                    <div class="checkbox-group">
+                        <input type="checkbox" name="mauticform[qual_seu_principal_objeti][]" value="criar_mvp" id="obj_criar_mvp">
+                        <label for="obj_criar_mvp">Criar um MVP</label>
+                    </div>
+                    <div class="checkbox-group">
+                        <input type="checkbox" name="mauticform[qual_seu_principal_objeti][]" value="aprender_ia" id="obj_aprender_ia">
+                        <label for="obj_aprender_ia">Aprender IA aplicada ao desenvolvimento</label>
+                    </div>
+                    <div class="checkbox-group">
+                        <input type="checkbox" name="mauticform[qual_seu_principal_objeti][]" value="networking" id="obj_networking">
+                        <label for="obj_networking">Networking</label>
+                    </div>
+                    <div class="checkbox-group">
+                        <input type="checkbox" name="mauticform[qual_seu_principal_objeti][]" value="validacao_ideia" id="obj_validacao_ideia">
+                        <label for="obj_validacao_ideia">Validação de ideia</label>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label>Você tem interesse em receber informações sobre a mentoria completa? <span class="optional-label">(opcional)</span></label>
+                    <div class="radio-group">
+                        <label class="radio-option">
+                            <input type="radio" name="mauticform[voce_tem_interesse_em_rec1]" value="sim">
+                            <span>Sim, quero saber mais</span>
+                        </label>
+                        <label class="radio-option">
+                            <input type="radio" name="mauticform[voce_tem_interesse_em_rec1]" value="nao">
+                            <span>No momento não</span>
+                        </label>
+                    </div>
+                </div>
+
+                <!-- Botão Submit -->
+                <button type="submit" class="submit-btn">Enviar Inscrição</button>
+
+                <!-- Loading e mensagens -->
+                <div class="loading">
+                    <div class="spinner"></div>
+                    <p>Enviando sua inscrição...</p>
+                </div>
+
+                <div class="success-message">
+                    <h3>✅ Inscrição realizada com sucesso!</h3>
+                    <p>Obrigado por se inscrever no TRAE Hackathon. Entraremos em contato em breve.</p>
+                </div>
+
+                <!-- Campos ocultos obrigatórios -->
+                <input type="hidden" name="mauticform[formId]" value="2">
+                <input type="hidden" name="mauticform[return]" value="">
+            </form>
+        </div>
+    </div>
+
+    <script>
+        class FormValidator {
+            constructor(formId) {
+                this.form = document.getElementById(formId);
+                this.init();
+            }
+
+            init() {
+                this.form.addEventListener('submit', (e) => this.handleSubmit(e));
+                this.addRealTimeValidation();
+            }
+
+            addRealTimeValidation() {
+                const inputs = this.form.querySelectorAll('input[required], select[required]');
+                inputs.forEach(input => {
+                    input.addEventListener('blur', () => this.validateField(input));
+                    input.addEventListener('input', () => this.clearError(input));
+                });
+            }
+
+            handleSubmit(e) {
+                e.preventDefault();
+                
+                if (this.validateForm()) {
+                    this.submitForm();
+                }
+            }
+
+            validateForm() {
+                let isValid = true;
+                const requiredFields = this.form.querySelectorAll('[required]');
+
+                requiredFields.forEach(field => {
+                    if (!this.validateField(field)) {
+                        isValid = false;
+                    }
+                });
+
+                return isValid;
+            }
+
+            validateField(field) {
+                const formGroup = field.closest('.form-group');
+                let isValid = true;
+
+                // Validação básica de campo vazio
+                if (!field.value.trim()) {
+                    isValid = false;
+                }
+
+                // Validações específicas por tipo
+                if (field.type === 'email' && field.value) {
+                    isValid = this.validateEmail(field.value);
+                }
+
+                if (field.id === 'mauticform_whatsapp' && field.value) {
+                    isValid = this.validatePhone(field.value);
+                }
+
+                if (isValid) {
+                    this.clearError(field);
+                } else {
+                    this.showError(field);
+                }
+
+                return isValid;
+            }
+
+            validateEmail(email) {
+                const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+                return emailRegex.test(email);
+            }
+
+            validatePhone(phone) {
+                // Valida telefone brasileiro com DDD
+                const phoneRegex = /^\(?\d{2}\)?\s?\d{4,5}-?\d{4}$/;
+                return phoneRegex.test(phone.replace(/\s/g, ''));
+            }
+
+            showError(field) {
+                const formGroup = field.closest('.form-group');
+                if (formGroup) {
+                    formGroup.classList.add('error');
+                }
+            }
+
+            clearError(field) {
+                const formGroup = field.closest('.form-group');
+                if (formGroup) {
+                    formGroup.classList.remove('error');
+                }
+            }
+
+            async submitForm() {
+                const submitBtn = this.form.querySelector('.submit-btn');
+                const loading = this.form.querySelector('.loading');
+                const successMessage = this.form.querySelector('.success-message');
+
+                // Desabilitar botão e mostrar loading
+                submitBtn.disabled = true;
+                loading.classList.add('active');
+
+                try {
+                    const formData = new FormData(this.form);
+                    
+                    const response = await fetch(this.form.action, {
+                        method: 'POST',
+                        body: formData,
+                        headers: {
+                            'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8'
+                        }
+                    });
+
+                    if (response.ok) {
+                        // Sucesso
+                        loading.classList.remove('active');
+                        successMessage.classList.add('active');
+                        this.form.reset();
+                        
+                        // Opcional: redirecionar após 3 segundos
+                        setTimeout(() => {
+                            window.location.href = 'https://trae.ia.br/sucesso';
+                        }, 3000);
+                    } else {
+                        throw new Error('Erro ao enviar formulário');
+                    }
+                } catch (error) {
+                    loading.classList.remove('active');
+                    submitBtn.disabled = false;
+                    alert('Erro ao enviar formulário. Por favor, tente novamente.');
+                    console.error('Erro:', error);
+                }
+            }
+        }
+
+        // Inicializar validação quando o DOM estiver pronto
+        document.addEventListener('DOMContentLoaded', () => {
+            new FormValidator('traeForm');
+        });
+
+        // Máscara para telefone
+        document.getElementById('mauticform_whatsapp').addEventListener('input', function(e) {
+            let value = e.target.value.replace(/\D/g, '');
+            
+            if (value.length <= 10) {
+                // Formato: (11) 9999-9999
+                value = value.replace(/(\d{2})(\d{4})(\d{0,4})/, '($1) $2-$3');
+            } else {
+                // Formato: (11) 99999-9999
+                value = value.replace(/(\d{2})(\d{5})(\d{0,4})/, '($1) $2-$3');
+            }
+            
+            e.target.value = value;
+        });
+    </script>
+</body>
+</html>
