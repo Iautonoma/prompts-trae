@@ -11,6 +11,12 @@
             box-sizing: border-box;
         }
 
+        .required-asterisk {
+            color: #f44336;
+            font-weight: bold;
+            margin-left: 3px;
+        }
+
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
@@ -398,15 +404,15 @@
                 // Validação básica de campo vazio
                 if (!field.value.trim()) {
                     isValid = false;
-                }
+                } else {
+                    // Validações específicas por tipo apenas se o campo estiver preenchido
+                    if (field.type === 'email') {
+                        isValid = this.validateEmail(field.value);
+                    }
 
-                // Validações específicas por tipo
-                if (field.type === 'email' && field.value) {
-                    isValid = this.validateEmail(field.value);
-                }
-
-                if (field.id === 'mauticform_whatsapp' && field.value) {
-                    isValid = this.validatePhone(field.value);
+                    if (field.id === 'mauticform_whatsapp') {
+                        isValid = this.validatePhone(field.value);
+                    }
                 }
 
                 if (isValid) {
@@ -488,7 +494,25 @@
         // Inicializar validação quando o DOM estiver pronto
         document.addEventListener('DOMContentLoaded', () => {
             new FormValidator('traeForm');
+            
+            // Adicionar asteriscos vermelhos nos campos obrigatórios
+            addRequiredAsterisks();
         });
+
+        // Função para adicionar asteriscos vermelhos nos campos obrigatórios
+        function addRequiredAsterisks() {
+            const requiredFields = document.querySelectorAll('[required]');
+            
+            requiredFields.forEach(field => {
+                const label = field.closest('.form-group').querySelector('label');
+                if (label && !label.querySelector('.required-asterisk')) {
+                    const asterisk = document.createElement('span');
+                    asterisk.className = 'required-asterisk';
+                    asterisk.textContent = '*';
+                    label.appendChild(asterisk);
+                }
+            });
+        }
 
         // Máscara para telefone
         document.getElementById('mauticform_whatsapp').addEventListener('input', function(e) {
